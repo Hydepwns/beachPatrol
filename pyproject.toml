@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "beachpatrol"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+twspace-dl = "^2023.7.24.1"
+openai = "^0.28.1"
+langchain = "^0.0.306"
+python-dotenv = "^1.0.0"
+tiktoken = "^0.5.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -785,6 +785,25 @@ files = [
 ]
 
 [[package]]
+name = "py-cord"
+version = "2.4.1"
+description = "A Python wrapper for the Discord API"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "py-cord-2.4.1.tar.gz", hash = "sha256:0266c9d9a9d2397622a0e5ead09826690e688ba3cf14c470167b81e6cd2d8a56"},
+    {file = "py_cord-2.4.1-py3-none-any.whl", hash = "sha256:862a372c364cd263e2c8e696c64887f969c02cbdf0fdd6b09f0283e9dd67a290"},
+]
+
+[package.dependencies]
+aiohttp = ">=3.6.0,<3.9.0"
+
+[package.extras]
+docs = ["furo", "myst-parser (==0.18.1)", "sphinx (==5.3.0)", "sphinx-autodoc-typehints (==1.22)", "sphinx-copybutton (==0.5.1)", "sphinxcontrib-trio (==1.1.2)", "sphinxcontrib-websupport (==1.2.4)", "sphinxext-opengraph (==0.8.1)"]
+speed = ["aiohttp[speedups]", "orjson (>=3.5.4)"]
+voice = ["PyNaCl (>=1.3.0,<1.6)"]
+
+[[package]]
 name = "pydantic"
 version = "2.4.2"
 description = "Data validation using Python type hints"
@@ -1418,4 +1437,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "57b23cdb445d5a58b0beb3cf7eed42a13004970c7216ed9b487f5a94246fa2d9"
+content-hash = "56719aaf0de5e28755964648eaac176f314e428a5656bf39e84a3f13151bc69a"

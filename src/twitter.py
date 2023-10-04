@@ -19,7 +19,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-def download_twitter_space_direct(space_url, cookie_file, output_format="/tmp/spaces/%(creator_name)s-%(creator_id)s-%(title)s-%(id)s"):
+def download_twitter_space_direct(space_url, cookie_file, output_format="/tmp/spaces/%(creator_id)s-%(id)s"):
     API.init_apis(load_cookies(cookie_file))
     twspace = Twspace.from_space_url(space_url)
 
@@ -57,28 +57,29 @@ def monitor_twitter_spaces(user_ids, cookies_path, interval=10, variance=5):
             time.sleep(sleep_time)
 
 
-def chunk_file_if_needed(file_path, max_size_mb=25):
-    # Check the file size
+def chunk_file_if_needed(file_path, max_size_mb=10):
     file_size_mb = os.path.getsize(file_path) / (1024 * 1024)
 
     if file_size_mb <= max_size_mb:
-        # If size is below threshold, return the original path in a list
+        # Return the original path in a list
         return [file_path]
     else:
-        # If file needs chunking
-        # Calculate segment time (as an estimate for now)
-        # This is a basic approach. Ideally, we might want to adjust based on file bitrate
+        # Calculate segment time based on estimated file size
         duration = get_audio_duration(file_path)
         estimated_segment_time = int(duration * (max_size_mb / file_size_mb))
 
-        # Create the directory to store segments
+        # Create directory to store segments
         base_name = os.path.basename(file_path).rsplit('.', 1)[0]
         segments_dir = f"/tmp/spaces/{base_name}/segments"
         os.makedirs(segments_dir, exist_ok=True)
 
-        # Split the file into chunks
-        os.system(
-            f"ffmpeg -i {file_path} -f segment -segment_time {estimated_segment_time} -c copy {segments_dir}/segment%09d.mp3")
+        # Use FFmpeg to split file into chunks. Note the usage of '-acodec mp3' to explicitly set the audio codec.
+        cmd = (
+            f"ffmpeg -i {file_path} -f segment -segment_time {estimated_segment_time} "
+            f"-acodec libmp3lame -b:a 192k {segments_dir}/segment%09d.mp3"
+        )
+
+        os.system(cmd)
 
         # Return the list of chunk file paths
         return [os.path.join(segments_dir, f) for f in os.listdir(segments_dir) if f.startswith("segment")]

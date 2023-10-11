@@ -42,9 +42,11 @@ async def run_in_executor(func, *args):
 
 async def notify_user(ctx, space_url):
     try:
-        summary = await run_in_executor(process_twitter_space, space_url, "cookies.txt")
+        res = await run_in_executor(process_twitter_space, space_url, "cookies.txt")
         with open("summary.txt", "w") as file:
-            file.write(summary)
+            file.write(res["notes"])
+
+        await ctx.send(res["exec_sum"])
         await ctx.send(file=discord.File("summary.txt"))
     except Exception as e:
         await ctx.send(f"Error processing {space_url}: {e}")

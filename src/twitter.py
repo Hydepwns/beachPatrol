@@ -111,24 +111,18 @@ def transcribe_segments(segments, prompt):
     return transcript
 
 
-prompt_template = """
+summary_template = """
     You are an analytics professional at Lido Finance, a Liquid Staking protocol for Ethereum. You are given a transcript of Twitter Spaces in the crypto/web3 space that may or may not be related to Lido.
     Given the transcript, you are writing structured notes in markdown format. Think of your notes as key takeaways, TLDRs, and executive summaries.
 
     Your notes should be concise, detailed, and structured by topics. You know what information is especially important, and what is less important.
-    
-    The note document should be structured as follows:
-    Executive Summary: information that Lido executives need to know about. This should be a TLDR of the entire transcript intended for Lido.
-    Followed by your standard notes structured by topics.
-
-    The entire document should be written in markdown format, and you should take into account that the intended audience is Lido employees.
 
     Here is the transcript:
     {text}
     
     YOUR NOTES:"""
 
-refine_template = """
+refine_summary_template = """
     You are an analytics professional at Lido Finance, a Liquid Staking protocol for Ethereum. You are given a transcript of Twitter Spaces in the crypto/web3 space that may or may not be related to Lido.
     Given the transcript, you are refining structured notes in markdown format. Think of your notes as key takeaways, TLDRs, and executive summaries.
 
@@ -146,16 +140,10 @@ refine_template = """
     Your notes should be concise, detailed, and structured by topics. You know what information is especially important, and what is less important.
 
     Use markdown formatting to its fullest to produce visually appealing, structured notes.
-
-    The note document should be structured as follows:
-    Executive Summary: information that Lido executives need to know about. This should be a TLDR of the entire transcript intended for Lido.
-    Followed by your standard notes structured by topics.
-
-    The entire document should be written in markdown format, and you should take into account that the intended audience is Lido employees.
     """
 
-prompt = PromptTemplate.from_template(prompt_template)
-refine_prompt = PromptTemplate.from_template(refine_template)
+summary_prompt = PromptTemplate.from_template(summary_template)
+refine_summary_prompt = PromptTemplate.from_template(refine_summary_template)
 
 
 def summarize_transcript(transcript):
@@ -168,8 +156,8 @@ def summarize_transcript(transcript):
         docs = text_splitter.split_documents([doc])
         llm = ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo-16k")
         chain = load_summarize_chain(llm, chain_type="refine",
-                                     question_prompt=prompt,
-                                     refine_prompt=refine_prompt,
+                                     question_prompt=summary_prompt,
+                                     refine_prompt=refine_summary_prompt,
                                      return_intermediate_steps=True,
                                      input_key="input_documents",
                                      output_key="output_text")
@@ -183,6 +171,53 @@ def summarize_transcript(transcript):
         return "Error summarizing transcript"
 
 
+executive_template = """
+    Given the summary of a Twitter Space:
+    {text}
+
+    Generate an extremely brief executive summary for Lido executives. It should be concise, focused, and only contain information relevant to Lido Finance.
+    """
+
+refine_executive_template = """
+    You are an analytics professional at Lido Finance, a Liquid Staking protocol for Ethereum. You are given a summary of Twitter Spaces in the crypto/web3 space that may or may not be related to Lido.
+    Given the summary, you are refining an executive summary in markdown format. Think of your notes as key takeaways, TLDRs, and executive summaries.
+
+    Here is the existing executive summary:
+    {existing_answer}
+
+    We have the opportunity to refine the existing executive summary (only if needed) with some more context below:
+    -----
+    {text}
+    -----
+
+    Your updated executive summary:"""
+
+executive_prompt = PromptTemplate.from_template(executive_template)
+refine_executive_prompt = PromptTemplate.from_template(
+    refine_executive_template)
+
+
+def get_executive_summary(summary):
+    try:
+        doc = Document(page_content=summary)
+        text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=40000, chunk_overlap=500, length_function=len, is_separator_regex=False)
+        docs = text_splitter.split_documents([doc])
+        llm = ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo-16k")
+        chain = load_summarize_chain(llm, chain_type="refine",
+                                     question_prompt=executive_prompt,
+                                     refine_prompt=refine_executive_prompt,
+                                     return_intermediate_steps=True,
+                                     input_key="input_documents",
+                                     output_key="output_text")
+
+        result = chain({"input_documents": docs}, return_only_outputs=True)
+        return result["output_text"]
+    except Exception as e:
+        print(f"Error generating executive summary: {e}")
+        return "Error generating executive summary"
+
+
 def process_twitter_space(space_url, cookies_path):
     transcript_location = download_twitter_space_direct(
         space_url, cookies_path)
@@ -190,5 +225,6 @@ def process_twitter_space(space_url, cookies_path):
     transcript = transcribe_segments(
         chunks, "Twitter Space about Crypto, Web3, Liquid Staking, and Lido Finance")
     summary = summarize_transcript(transcript)
+    executive_summary = get_executive_summary(summary)
 
-    return summary
+    return {'exec_sum': executive_summary, 'notes': summary}

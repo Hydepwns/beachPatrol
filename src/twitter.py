@@ -117,6 +117,12 @@ prompt_template = """
 
     Your notes should be concise, detailed, and structured by topics. You know what information is especially important, and what is less important.
     
+    The note document should be structured as follows:
+    Executive Summary: information that Lido executives need to know about. This should be a TLDR of the entire transcript intended for Lido.
+    Followed by your standard notes structured by topics.
+
+    The entire document should be written in markdown format, and you should take into account that the intended audience is Lido employees.
+
     Here is the transcript:
     {text}
     
@@ -140,6 +146,12 @@ refine_template = """
     Your notes should be concise, detailed, and structured by topics. You know what information is especially important, and what is less important.
 
     Use markdown formatting to its fullest to produce visually appealing, structured notes.
+
+    The note document should be structured as follows:
+    Executive Summary: information that Lido executives need to know about. This should be a TLDR of the entire transcript intended for Lido.
+    Followed by your standard notes structured by topics.
+
+    The entire document should be written in markdown format, and you should take into account that the intended audience is Lido employees.
     """
 
 prompt = PromptTemplate.from_template(prompt_template)

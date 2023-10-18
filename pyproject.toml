@@ -13,6 +13,8 @@ langchain = "^0.0.306"
 python-dotenv = "^1.0.0"
 tiktoken = "^0.5.1"
 py-cord = "^2.4.1"
+celery = "^5.3.4"
+redis = "^5.0.1"
 
 
 [build-system]

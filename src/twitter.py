@@ -43,18 +43,15 @@ def download_twitter_space_direct(space_url, cookie_file, output_format="/tmp/sp
         return None
 
 
-def monitor_twitter_spaces(user_ids, cookies_path, interval=10, variance=5):
-    while True:
-        for user_id in user_ids:
-            log_prefix = f"[{time.strftime('%m/%d/%y %H:%M:%S')}] [tw_space@{user_id}] "
+def get_twitter_space_if_live(user_url, cookies_path) -> Twspace | None:
+    API.init_apis(load_cookies(cookies_path))
+    try:
+        twspace = Twspace.from_user_avatar(user_url)
+    except Exception as e:
+        print(e)
+        return None
 
-            print(f"{log_prefix} [VRB] Start trying with cookies...")
-            space_url = f"https://twitter.com/{user_id}"
-            download_twitter_space_direct(space_url, cookies_path)
-
-            sleep_time = interval + random.randint(-variance, variance)
-            print(f"{log_prefix} [VRB] Sleep {sleep_time} sec.")
-            time.sleep(sleep_time)
+    return twspace
 
 
 def chunk_file_if_needed(file_path, max_size_mb=10):

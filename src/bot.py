@@ -9,7 +9,7 @@ import json
 bot = discord.Bot()
 load_dotenv()
 
-r = redis.Redis(host='localhost', port=6379, db=2)
+r = redis.Redis(host='localhost', port=6380)
 
 tasks_list = []
 
@@ -29,6 +29,7 @@ async def list(ctx):
 @bot.slash_command()
 async def add(ctx, twitter_url: str):
     r.rpush('watchlist', twitter_url)
+    r.persist('watchlist')
     await ctx.respond(f"Added {twitter_url} to watchlist")
 
 
@@ -55,20 +56,33 @@ async def check_tasks():
             print(result)
             # Only send a message and remove the task if the result is not None
             if result is not None:
-                await ctx.respond(f"Executive Summary: {result['exec_sum']}")
+                # 0 is exec sum, 1 is sum
+                await ctx.respond(f"Executive Summary: {result[0]}")
                 tasks_list.remove((job, ctx))
 
 
 @tasks.loop(seconds=60)
 async def check_watchlist_results():
-    channel_id = os.getenv("DISCORD_CHANNEL_ID")
+    channel_id = int(os.getenv("DISCORD_CHANNEL_ID"))
+    print(channel_id)
+    print(bot)
     channel = bot.get_channel(channel_id)
 
     for result_bytes in r.lrange('watchlist_results', 0, -1):
         result_str = result_bytes.decode('utf-8')
+        print(result_str)
         result_dict = json.loads(result_str)
 
-        await channel.send(f"Result: {result_dict['exec_sum']}")
+        space_url = result_dict['space_url']
+        exec_sum = result_dict['exec_sum']
+        notes = result_dict['notes']
+
+        await channel.send(f"Heads up! A monitored twitter space {space_url} just ended. Here is the executive summary: {exec_sum}")
+        # Save notes as a .txt file
+        with open('notes.txt', 'w') as f:
+            f.write(notes)
+        await channel.send(file=discord.File('notes.txt'))
+        os.remove('notes.txt')
 
         # Remove the result from the list
         r.lrem('watchlist_results', 1, result_bytes)

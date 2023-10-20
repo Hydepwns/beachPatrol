@@ -29,6 +29,9 @@ def download_twitter_space_direct(space_url, cookie_file, output_format="/tmp/sp
     # This will now use the custom output format you provided
     file_save_path = twspace_dl.filename + ".m4a"
 
+    if (os.path.exists("/tmp/spaces/") == False):
+        os.makedirs("/tmp/spaces/")
+
     try:
         twspace_dl.download()
         twspace_dl.embed_cover()
@@ -224,4 +227,4 @@ def process_twitter_space(space_url, cookies_path):
     summary = summarize_transcript(transcript)
     executive_summary = get_executive_summary(summary)
 
-    return {'exec_sum': executive_summary, 'notes': summary}
+    return {'space_url': space_url, 'exec_sum': executive_summary, 'notes': summary}

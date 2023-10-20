@@ -58,6 +58,10 @@ async def check_tasks():
             if result is not None:
                 # 0 is exec sum, 1 is sum
                 await ctx.respond(f"Executive Summary: {result[0]}")
+                with open('notes.txt', 'w') as f:
+                    f.write(result[1])
+                await ctx.respond(file=discord.File('notes.txt'))
+                os.remove('notes.txt')
                 tasks_list.remove((job, ctx))
 
 

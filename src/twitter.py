@@ -147,6 +147,19 @@ refine_summary_prompt = PromptTemplate.from_template(refine_summary_template)
 
 
 def summarize_transcript(transcript):
+    """
+    Summarizes a transcript.
+
+    This function splits the transcript into chunks, creates a `ChatOpenAI` instance, loads a summarization chain, and applies the chain to the chunks.
+    If an error occurs, it prints the error message and returns a string indicating an error.
+
+    Args:
+        transcript (str): The transcript to summarize.
+
+    Returns:
+        str: The summarized transcript or an error message.
+
+    """
     try:
         doc = Document(page_content=transcript)
 
@@ -170,7 +183,7 @@ def summarize_transcript(transcript):
         print(f"Error summarizing transcript: {e}")
         return "Error summarizing transcript"
 
-
+# Define a template for generating an executive summary. Feel free to edit.
 executive_template = """
     Given the summary of a Twitter Space:
     {text}

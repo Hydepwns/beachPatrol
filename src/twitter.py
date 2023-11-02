@@ -163,7 +163,9 @@ def summarize_transcript(transcript):
     try:
         doc = Document(page_content=transcript)
 
-        # Summarize the document
+        # Summarize the document, splitting it into chunks of 40,000 characters with 500 characters of overlap.
+        # model_name can be any model from https://huggingface.co/models?filter=summarization, chatgpt4 would be a good choice
+        # temperature is a parameter for the model that controls how "creative" the model is. 0 is the most conservative, 1 is the most creative.
         text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=40000, chunk_overlap=500, length_function=len, is_separator_regex=False)
         docs = text_splitter.split_documents([doc])

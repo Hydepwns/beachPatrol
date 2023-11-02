@@ -30,7 +30,7 @@ git clone https://github.com/Lido-DAO/beachPatrol.git
 cd beachPatrol
 ```
 
-3. Install Poetry, a tool for dependency management in Python. You can install it by following the instructions [here](https://python-poetry.org/docs/#installation).
+3. Install [Poetry](https://python-poetry.org/docs/#installation), a tool for dependency management in Python..
 
 4. Install the required dependencies using the poetry.lock file:
 
@@ -38,7 +38,7 @@ cd beachPatrol
 poetry install
 ```
 
-5. Download and install Redis if you haven't already. You can download it from [here](https://redis.io/download).
+5. [Download](https://redis.io/download) and install Redis if you haven't already.
 
 6. Start two instances of Redis by running the following commands in two separate terminal windows.
 Replace <port_number_1> and <port_number_2> with the port numbers you want to use (e.g., 6379 and 6380):
@@ -60,13 +60,13 @@ REDIS_PORT_2=<port_number_2>
 
 Replace <port_number_1> and <port_number_2> with the port numbers you used when starting the Redis instances. Save and close the .env file.
 
-10. Start the Celery worker:
+9. Start the Celery worker:
 
 ```bash
 celery -A worker worker --loglevel=info
 ```
 
-11. In a new terminal window, navigate to the project directory and run the application:
+10. In a new terminal window, navigate to the project directory and run the application:
 
 ```bash
 poetry run python bot.py

@@ -1,9 +1,13 @@
 [tool.poetry]
-name = "beachpatrol"
+name = "beachPatrol"
 version = "0.1.0"
-description = ""
+description = "A discord bot that patrols the beach."
 authors = ["Drew&Pate <drew@lido.fi>"]
 readme = "README.md"
+packages = [
+    { include = "beachPatrol", from = "src" }
+]
+
 
 [tool.poetry.dependencies]
 python = "^3.11"

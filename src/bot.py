@@ -1,12 +1,17 @@
 import discord
 from discord.ext import tasks
+from discord import Intents
 from dotenv import load_dotenv
 import os
 from celery_config import app as celery_app
 import redis
 import json
 
-bot = discord.Bot()
+intents = Intents.default()
+intents.presences = True
+
+
+bot = discord.Bot(intents=intents, command_prefix="/")
 load_dotenv()
 
 r = redis.Redis(host='localhost', port=6380)

@@ -21,7 +21,7 @@ To install **beachPatrol**, follow these steps:
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/Lido-DAO/beachPatrol.git
+git clone https://github.com/hydepwns/beachPatrol.git
 ```
 
 2. Navigate to the project directory:
@@ -54,7 +54,7 @@ redis-server --port <port_number_2>
 
 ```bash
 REDIS_HOST=localhost
-REDIS_PORT_1=<port_number_1>
+REDIS_PORT_1=<port_number_1> 
 REDIS_PORT_2=<port_number_2>
 ```
 
